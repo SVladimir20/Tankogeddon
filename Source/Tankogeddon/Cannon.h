@@ -34,11 +34,14 @@ protected:
 private:
     FTimerHandle ReloadTimerHandle;
     bool bIsReadyToFire = false;
+    int32 Ammo = 4;
 
 public:
     ACannon();
 
     void Fire();
+
+	void FireSpecial();
 
     bool IsReadyToFire();
 
