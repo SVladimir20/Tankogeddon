@@ -31,10 +31,18 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
     ECannonType Type = ECannonType::FireProjectile;
 
+    int32 MaxAmmo = 5;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 1), Category = "Fire params")
+		int32 NumShotsInSeries = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "NumShotsInSeries > 1", EditConditionHides), Category = "Fire params")
+		float SeriesLength = 1.f;
+
 private:
     FTimerHandle ReloadTimerHandle;
+    FTimerHandle SeriesTimerHandle;
     bool bIsReadyToFire = false;
-    int32 Ammo = 4;
 
 public:
     ACannon();
@@ -50,4 +58,8 @@ protected:
     virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
     void Reload();
+    void Shot();
+
+    int32 TotalAmmo = 0;
+    int32 ShotsLeft = 0;
 };
