@@ -71,9 +71,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Turret")
 	void FireSpecial();
 
-private:
-    void SetupCannon();
+	UFUNCTION(BlueprintCallable, Category = "Turret")
+		void SetupCannon(TSubclassOf<class ACannon> InCannonClass);
 
+private:
     UPROPERTY()
     class ACannon* Cannon = nullptr;
 
