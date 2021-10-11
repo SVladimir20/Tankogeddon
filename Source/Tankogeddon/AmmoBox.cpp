@@ -2,8 +2,9 @@
 
 
 #include "AmmoBox.h"
-#include "Components/StaticMeshComponent.h"
 #include "TankPawn.h"
+#include "Cannon.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 AAmmoBox::AAmmoBox()
@@ -21,10 +22,18 @@ AAmmoBox::AAmmoBox()
 
 void AAmmoBox::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ATankPawn* PlayerPawn = Cast<ATankPawn>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (OtherActor == PlayerPawn)
+	ATankPawn* PlayerPawn = Cast<ATankPawn>(OtherActor);
+	ACannon* Cannon = Cast<ACannon>(PlayerPawn->FirstCannonClass);
+	if (PlayerPawn && CannonClass)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Picked up Tracer AmmoBox"));
 		PlayerPawn->SetupCannon(CannonClass);
+		Destroy();
+	}
+	else if (PlayerPawn && !CannonClass)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Picked up Projectile AmmoBox"));
+		PlayerPawn->Ammunition(Resupply);
 		Destroy();
 	}
 }

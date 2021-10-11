@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
 		bool bHasSpecialFire = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
 		int32 MaxAmmo = 10;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 1), Category = "Fire params")
@@ -59,6 +59,9 @@ public:
 
 	bool IsReadyToFire();
 	bool HasSpecialFire() const;
+
+	UFUNCTION()
+	void Ammunition(int32 Resupply);
 
 protected:
 	virtual void BeginPlay() override;

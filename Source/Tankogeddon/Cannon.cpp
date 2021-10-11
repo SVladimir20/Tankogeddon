@@ -8,6 +8,7 @@
 #include "Tankogeddon.h"
 #include "Projectile.h"
 #include "DrawDebugHelpers.h"
+#include "TankPawn.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -82,6 +83,11 @@ bool ACannon::IsReadyToFire()
     return bIsReadyToFire && TotalAmmo > 0 && ShotsLeft == 0;
 }
 
+bool ACannon::HasSpecialFire() const
+{
+	return bHasSpecialFire;
+}
+
 // Called when the game starts or when spawned
 void ACannon::BeginPlay()
 {
@@ -150,4 +156,9 @@ void ACannon::Shot()
 	{
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
 	}
+}
+
+void ACannon::Ammunition(int32 Resupply)
+{
+	TotalAmmo += Resupply;
 }

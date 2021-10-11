@@ -42,7 +42,7 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    SetupCannon(DefaultCannonClass);
+    SetupCannon(FirstCannonClass);
 }
 
 // Called every frame
@@ -114,4 +114,17 @@ void ATankPawn::SetupCannon(TSubclassOf<class ACannon> InCannonClass)
 		Cannon = GetWorld()->SpawnActor<ACannon>(InCannonClass, Params);
 		Cannon->AttachToComponent(CannonSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
+}
+
+void ATankPawn::SwapWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Weapon swapped"));
+	TSubclassOf<ACannon> TempCannon = this->FirstCannonClass;
+	this->SetupCannon(SecondCannonClass);
+	SecondCannonClass = TempCannon;
+}
+
+void ATankPawn::Ammunition(int32 MaxAmmo)
+{
+	Cannon->Ammunition(MaxAmmo);
 }
