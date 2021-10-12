@@ -8,7 +8,7 @@
 #include "Tankogeddon.h"
 #include "Projectile.h"
 #include "DrawDebugHelpers.h"
-#include "TankPawn.h"
+#include "ActorPoolSubsystem.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -28,64 +28,66 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
-    if (TotalAmmo < 1)
-    {
-        GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Blue, TEXT("Empty"));
-        return;
-    }
-    if (!bIsReadyToFire)
+    if (!IsReadyToFire())
     {
         return;
     }
     bIsReadyToFire = false;
-    --TotalAmmo;
-	ShotsLeft = NumShotsInSeries;
-	Shot();
+    --NumAmmo;
+    ShotsLeft = NumShotsInSeries;
+    Shot();
 
-    UE_LOG(LogTankogeddon, Log, TEXT("Fire. Ammo left: %d"), TotalAmmo);
+    UE_LOG(LogTankogeddon, Log, TEXT("Fire! Ammo left: %d"), NumAmmo);
 }
 
 void ACannon::FireSpecial()
 {
-	if (TotalAmmo < 1)
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Blue, TEXT("Empty"));
-		return;
-	}
-	if (!bIsReadyToFire)
-	{
-		return;
-	}
-	bIsReadyToFire = false;
-    --TotalAmmo;
+    if (!HasSpecialFire() || !IsReadyToFire())
+    {
+        return;
+    }
 
-	if (Type == ECannonType::FireProjectile)
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Red, TEXT("FireSpecial - projectile"));
+    bIsReadyToFire = false;
+    --NumAmmo;
 
-		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
-		if (Projectile)
-		{
-			Projectile->Start();
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 2.f, FColor::Red, TEXT("FireSpecial - trace"));
-	}
+    if (Type == ECannonType::FireProjectile)
+    {
+        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, TEXT("Fire special - projectile"));
 
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 2.f / FireRate, false);
-    UE_LOG(LogTankogeddon, Log, TEXT("FireSpecial. Ammo left: %d"), TotalAmmo);
+        AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+        if (Projectile)
+        {
+            Projectile->Start();
+        }
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, TEXT("Fire special - trace"));
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
+    UE_LOG(LogTankogeddon, Log, TEXT("FireSpecial! Ammo left: %d"), NumAmmo);
 }
 
 bool ACannon::IsReadyToFire()
 {
-    return bIsReadyToFire && TotalAmmo > 0 && ShotsLeft == 0;
+    return bIsReadyToFire && NumAmmo > 0 && ShotsLeft == 0;
 }
 
 bool ACannon::HasSpecialFire() const
 {
-	return bHasSpecialFire;
+    return bHasSpecialFire;
+}
+
+void ACannon::SetVisibility(bool bIsVisible)
+{
+    Mesh->SetHiddenInGame(!bIsVisible);
+}
+
+void ACannon::AddAmmo(int32 InNumAmmo)
+{
+    NumAmmo = FMath::Clamp(NumAmmo + InNumAmmo, 0, MaxAmmo);
+    UE_LOG(LogTankogeddon, Log, TEXT("AddAmmo(%d)! NumAmmo: %d"), InNumAmmo, NumAmmo);
 }
 
 // Called when the game starts or when spawned
@@ -94,7 +96,7 @@ void ACannon::BeginPlay()
 	Super::BeginPlay();
 	
     bIsReadyToFire = true;
-    TotalAmmo = MaxAmmo;
+    NumAmmo = MaxAmmo;
     ShotsLeft = 0;
 }
 
@@ -113,52 +115,50 @@ void ACannon::Reload()
 
 void ACannon::Shot()
 {
-	check(ShotsLeft > 0);
-	if (Type == ECannonType::FireProjectile)
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1, FColor::Green, TEXT("Fire - projectile"));
+    check(ShotsLeft > 0);
+    if (Type == ECannonType::FireProjectile)
+    {
+        GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1, FColor::Green, TEXT("Fire - projectile"));
 
-		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
-		if (Projectile)
-		{
-			Projectile->Start();
-		}
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1, FColor::Green, TEXT("Fire - trace"));
+        UActorPoolSubsystem* Pool = GetWorld()->GetSubsystem<UActorPoolSubsystem>();
+        FTransform SpawnTransform(ProjectileSpawnPoint->GetComponentRotation(), ProjectileSpawnPoint->GetComponentLocation(), FVector::OneVector);
+        AProjectile* Projectile = Cast<AProjectile>(Pool->RetreiveActor(ProjectileClass, SpawnTransform));
+        if (Projectile)
+        {
+            Projectile->SetInstigator(GetInstigator());
+            Projectile->Start();
+        }
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1, FColor::Green, TEXT("Fire - trace"));
 
-		FHitResult HitResult;
-		FVector TraceStart = ProjectileSpawnPoint->GetComponentLocation();
-		FVector TraceEnd = ProjectileSpawnPoint->GetComponentLocation() + ProjectileSpawnPoint->GetForwardVector() * FireRange;
-		FCollisionQueryParams TraceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
-		TraceParams.bReturnPhysicalMaterial = false;
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams))
-		{
-			DrawDebugLine(GetWorld(), TraceStart, HitResult.Location, FColor::Red, false, 0.5f, 0, 5.f);
-			if (HitResult.Actor.IsValid() && HitResult.Component.IsValid(), HitResult.Component->GetCollisionObjectType() == ECC_Destructible)
-			{
-				HitResult.Actor->Destroy();
-			}
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 0.5f, 0, 5.f);
-		}
-	}
+        FHitResult HitResult;
+        FVector TraceStart = ProjectileSpawnPoint->GetComponentLocation();
+        FVector TraceEnd = ProjectileSpawnPoint->GetComponentLocation() + ProjectileSpawnPoint->GetForwardVector() * FireRange;
+        FCollisionQueryParams TraceParams = FCollisionQueryParams (FName(TEXT("FireTrace")), true, this);
+        TraceParams.bReturnPhysicalMaterial = false;
+        if (GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams))
+        {
+            DrawDebugLine(GetWorld(), TraceStart, HitResult.Location, FColor::Red, false, 0.5f, 0, 5.f);
+            if (HitResult.Actor.IsValid() && HitResult.Component.IsValid(), HitResult.Component->GetCollisionObjectType() == ECC_Destructible)
+            {
+                HitResult.Actor->Destroy();
+            }
+        }
+        else
+        {
+            DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Red, false, 0.5f, 0, 5.f);
+        }
+    }
 
-	if (--ShotsLeft > 0)
-	{
-		const float NextShotTime = SeriesLength / (NumShotsInSeries - 1);
-		GetWorld()->GetTimerManager().SetTimer(SeriesTimerHandle, this, &ACannon::Shot, NextShotTime, false);
-	}
-	else
-	{
-		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
-	}
-}
-
-void ACannon::Ammunition(int32 Resupply)
-{
-	TotalAmmo += Resupply;
+    if (--ShotsLeft > 0)
+    {
+        const float NextShotTime = SeriesLength / (NumShotsInSeries - 1);
+        GetWorld()->GetTimerManager().SetTimer(SeriesTimerHandle, this, &ACannon::Shot, NextShotTime, false);
+    }
+    else
+    {
+        GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1.f / FireRate, false);
+    }
 }

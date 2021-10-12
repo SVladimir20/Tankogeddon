@@ -42,7 +42,7 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    SetupCannon(FirstCannonClass);
+    SetupCannon(DefaultCannonClass);
 }
 
 // Called every frame
@@ -85,46 +85,52 @@ void ATankPawn::SetTurretTargetPosition(const FVector& TargetPosition)
 
 void ATankPawn::Fire()
 {
-    if (Cannon)
+    if (ActiveCannon)
     {
-        Cannon->Fire();
+        ActiveCannon->Fire();
     }
 }
 
 void ATankPawn::FireSpecial()
 {
-	if (Cannon)
-	{
-		Cannon->FireSpecial();
-	}
+    if (ActiveCannon)
+    {
+        ActiveCannon->FireSpecial();
+    }
 }
 
 void ATankPawn::SetupCannon(TSubclassOf<class ACannon> InCannonClass)
 {
-    if (Cannon)
+    if (ActiveCannon)
     {
-        Cannon->Destroy();
+        ActiveCannon->Destroy();
     }
 
-	if (InCannonClass)
-	{
-		FActorSpawnParameters Params;
-		Params.Instigator = this;
-		Params.Owner = this;
-		Cannon = GetWorld()->SpawnActor<ACannon>(InCannonClass, Params);
-		Cannon->AttachToComponent(CannonSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-	}
+    if (InCannonClass)
+    {
+        FActorSpawnParameters Params;
+        Params.Instigator = this;
+        Params.Owner = this;
+        ActiveCannon = GetWorld()->SpawnActor<ACannon>(InCannonClass, Params);
+        ActiveCannon->AttachToComponent(CannonSpawnPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+    }
 }
 
-void ATankPawn::SwapWeapon()
+void ATankPawn::CycleCannon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Weapon swapped"));
-	TSubclassOf<ACannon> TempCannon = this->FirstCannonClass;
-	this->SetupCannon(SecondCannonClass);
-	SecondCannonClass = TempCannon;
+    Swap(ActiveCannon, InactiveCannon);
+    if (ActiveCannon)
+    {
+        ActiveCannon->SetVisibility(true);
+    }
+
+    if (InactiveCannon)
+    {
+        InactiveCannon->SetVisibility(false);
+    }
 }
 
-void ATankPawn::Ammunition(int32 MaxAmmo)
+ACannon* ATankPawn::GetActiveCannon() const
 {
-	Cannon->Ammunition(MaxAmmo);
+    return ActiveCannon;
 }
