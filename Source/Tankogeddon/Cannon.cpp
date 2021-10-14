@@ -9,6 +9,7 @@
 #include "Projectile.h"
 #include "DrawDebugHelpers.h"
 #include "ActorPoolSubsystem.h"
+#include "Damageable.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -145,6 +146,14 @@ void ACannon::Shot()
             {
                 HitResult.Actor->Destroy();
             }
+			else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
+			{
+                FDamageData DamageData;
+                DamageData.DamageValue = FireDamage;
+                DamageData.Instigator = GetInstigator();
+                DamageData.DamageMaker = this;
+                Damageable->TakeDamage(DamageData);
+			}
         }
         else
         {
