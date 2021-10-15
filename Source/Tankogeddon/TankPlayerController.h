@@ -20,6 +20,9 @@ public:
 	// Called to bind functionality to input
     virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY()
+	int32 Scores;
 	
 private:
 	void MoveForward(float InAxisValue);

@@ -46,6 +46,11 @@ ATankPawn::ATankPawn()
 	HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
 }
 
+int32 ATankPawn::GetScores() const
+{
+	return DestructionScores;
+}
+
 // Called when the game starts or when spawned
 void ATankPawn::BeginPlay()
 {

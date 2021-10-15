@@ -148,11 +148,11 @@ void ACannon::Shot()
             }
 			else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
 			{
-                FDamageData DamageData;
-                DamageData.DamageValue = FireDamage;
-                DamageData.Instigator = GetInstigator();
-                DamageData.DamageMaker = this;
-                Damageable->TakeDamage(DamageData);
+				FDamageData DamageData;
+				DamageData.DamageValue = FireDamage;
+				DamageData.Instigator = GetInstigator();
+				DamageData.DamageMaker = this;
+				Damageable->TakeDamage(DamageData);
 			}
         }
         else

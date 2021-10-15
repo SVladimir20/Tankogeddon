@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameStructs.h"
 #include "Damageable.h"
+#include "Scoreable.h"
 #include "TankPawn.generated.h"
 
 UCLASS()
-class TANKOGEDDON_API ATankPawn : public APawn, public IDamageable
+class TANKOGEDDON_API ATankPawn : public APawn, public IDamageable, public IScoreable
 {
 	GENERATED_BODY()
 
@@ -56,6 +58,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
     TSubclassOf<class ACannon> DefaultCannonClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Scores")
+	int32 DestructionScores = 10;
+
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnHealthChanged(float Damage);
 
@@ -93,6 +98,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Turret")
     class ACannon* GetActiveCannon() const;
 
+	virtual void TakeDamage(const FDamageData& DamageData) override;
+	int32 GetScores() const override;
+
 private:
     UPROPERTY()
     class ACannon* ActiveCannon = nullptr;
@@ -106,7 +114,4 @@ private:
     float TargetRotateRightAxis = 0.f;
 
     FVector TurretTargetPosition;
-
-public:
-    virtual void TakeDamage(const FDamageData& DamageData) override;
 };
