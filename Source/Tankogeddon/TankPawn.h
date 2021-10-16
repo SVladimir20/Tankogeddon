@@ -67,6 +67,12 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "Health")
 	void OnDie();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params", Meta = (MakeEditWidget = true))
+	TArray<FVector> PatrollingPoints;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params")
+	float MovementAccuracy = 50.f;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -98,8 +104,23 @@ public:
     UFUNCTION(BlueprintPure, Category = "Turret")
     class ACannon* GetActiveCannon() const;
 
+	UFUNCTION(BlueprintPure, Category = "Turret")
+	FVector GetTurretForwardVector();
+
 	virtual void TakeDamage(const FDamageData& DamageData) override;
 	int32 GetScores() const override;
+
+	UFUNCTION(BlueprintPure, Category = "AI|Move params")
+	const TArray<FVector>& GetPatrollingPoints()
+	{
+		return PatrollingPoints;
+	}
+
+	UFUNCTION(BlueprintPure, Category = "AI|Move params")
+	float GetMovementAccuracy()
+	{
+		return MovementAccuracy;
+	}
 
 private:
     UPROPERTY()

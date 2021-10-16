@@ -149,6 +149,11 @@ ACannon* ATankPawn::GetActiveCannon() const
     return ActiveCannon;
 }
 
+FVector ATankPawn::GetTurretForwardVector()
+{
+	return TurretMesh->GetForwardVector();
+}
+
 void ATankPawn::OnHealthChanged_Implementation(float Damage)
 {
 	UE_LOG(LogTankogeddon, Log, TEXT("TankPawn %s taked damage:%f "), *GetName(), Damage);
