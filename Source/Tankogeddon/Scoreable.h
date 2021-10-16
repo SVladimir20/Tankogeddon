@@ -14,7 +14,7 @@ class UScoreable : public UInterface
 };
 
 /**
-*
+* 
 */
 class TANKOGEDDON_API IScoreable
 {

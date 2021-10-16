@@ -30,11 +30,11 @@ ACannon::ACannon()
     ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
     ProjectileSpawnPoint->SetupAttachment(Mesh);
 
-	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Shoot Effect"));
-	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
+    ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Shoot Effect"));
+    ShootEffect->SetupAttachment(ProjectileSpawnPoint);
 
-	AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Effect"));
-	AudioEffect->SetupAttachment(ProjectileSpawnPoint);
+    AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Effect"));
+    AudioEffect->SetupAttachment(ProjectileSpawnPoint);
 }
 
 void ACannon::Fire()
@@ -127,24 +127,23 @@ void ACannon::Reload()
 void ACannon::Shot()
 {
     check(ShotsLeft > 0);
-	ShootEffect->ActivateSystem();
-	AudioEffect->Play();
+    ShootEffect->ActivateSystem();
+    AudioEffect->Play();
 
-	if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
-	{
-		if (ShootForceEffect)
-		{
-			FForceFeedbackParameters Params;
-			Params.bLooping = false;
-			Params.Tag = TEXT("ShootFFParams");
-			GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ShootForceEffect);
-		}
-
-		if (ShootShake)
-		{
-			GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(ShootShake);
-		}
-	}
+    if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
+    {
+        if (ShootForceEffect)
+        {
+            FForceFeedbackParameters Params;
+            Params.bLooping = false;
+            Params.Tag = TEXT("ShootFFParams");
+            GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ShootForceEffect);
+        }
+        if (ShootShake)
+        {
+            GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(ShootShake);
+        }
+    }
 
     if (Type == ECannonType::FireProjectile)
     {
@@ -175,18 +174,18 @@ void ACannon::Shot()
             {
                 HitResult.Actor->Destroy();
             }
-			else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
-			{
-				AActor* MyInstigator = GetInstigator();
-				if (HitResult.Actor != MyInstigator)
-				{
-					FDamageData DamageData;
-					DamageData.DamageValue = FireDamage;
-					DamageData.DamageMaker = this;
-					DamageData.Instigator = MyInstigator;
-					Damageable->TakeDamage(DamageData);
-				}
-			}
+            else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
+            {
+                AActor* MyInstigator = GetInstigator();
+                if (HitResult.Actor != MyInstigator)
+                {
+                    FDamageData DamageData;
+                    DamageData.DamageValue = FireDamage;
+                    DamageData.DamageMaker = this;
+                    DamageData.Instigator = MyInstigator;
+                    Damageable->TakeDamage(DamageData);
+                }
+            }
         }
         else
         {

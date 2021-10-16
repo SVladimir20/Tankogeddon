@@ -21,8 +21,8 @@ public:
     virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY()
-	int32 Scores;
+    UPROPERTY()
+    int32 Scores;
 	
 private:
 	void MoveForward(float InAxisValue);

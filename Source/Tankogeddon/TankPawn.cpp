@@ -5,12 +5,12 @@
 #include <Components/StaticMeshComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
-#include "Components/BoxComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Tankogeddon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Cannon.h"
+#include "Components/BoxComponent.h"
 #include "HealthComponent.h"
 
 // Sets default values
@@ -38,17 +38,17 @@ ATankPawn::ATankPawn()
     CannonSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
     CannonSpawnPoint->SetupAttachment(TurretMesh);
 
-	HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
-	HitCollider->SetupAttachment(BodyMesh);
+    HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+    HitCollider->SetupAttachment(BodyMesh);
 
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
-	HealthComponent->OnHealthChanged.AddDynamic(this, &ATankPawn::OnHealthChanged);
-	HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
+    HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+    HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
+    HealthComponent->OnHealthChanged.AddDynamic(this, &ATankPawn::OnHealthChanged);
 }
 
 int32 ATankPawn::GetScores() const
 {
-	return DestructionScores;
+    return DestructionScores;
 }
 
 // Called when the game starts or when spawned
@@ -151,20 +151,20 @@ ACannon* ATankPawn::GetActiveCannon() const
 
 FVector ATankPawn::GetTurretForwardVector()
 {
-	return TurretMesh->GetForwardVector();
-}
-
-void ATankPawn::OnHealthChanged_Implementation(float Damage)
-{
-	UE_LOG(LogTankogeddon, Log, TEXT("TankPawn %s taked damage:%f "), *GetName(), Damage);
-}
-
-void ATankPawn::OnDie_Implementation()
-{
-	Destroy();
+    return TurretMesh->GetForwardVector();
 }
 
 void ATankPawn::TakeDamage(const FDamageData& DamageData)
 {
-	HealthComponent->TakeDamage(DamageData);
+    HealthComponent->TakeDamage(DamageData);
+}
+
+void ATankPawn::OnHealthChanged_Implementation(float Damage)
+{
+    UE_LOG(LogTankogeddon, Log, TEXT("Tank %s taken damage:%f "), *GetName(), Damage);
+}
+
+void ATankPawn::OnDie_Implementation()
+{
+    Destroy();
 }

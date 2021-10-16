@@ -45,8 +45,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
     float Accuracy = 10.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Scores")
-	int32 DestructionScores = 1;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Scores")
+    int32 DestructionScores = 1;
 
     const FString BodyMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Tower1.SM_CSC_Tower1'";
     const FString TurretMeshPath = "StaticMesh'/Game/CSC/Meshes/SM_CSC_Gun1.SM_CSC_Gun1'";
@@ -79,5 +79,6 @@ public:
 
 public:
     virtual void TakeDamage(const FDamageData& DamageData) override;
+
     virtual int32 GetScores() const override;
 };
