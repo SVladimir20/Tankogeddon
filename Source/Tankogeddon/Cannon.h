@@ -19,6 +19,12 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UArrowComponent* ProjectileSpawnPoint;
 
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    class UParticleSystemComponent* ShootEffect;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    class UAudioComponent* AudioEffect;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
     float FireRate = 1.5f;
 
@@ -35,7 +41,7 @@ protected:
     int32 MaxAmmo = 50;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = 1), Category = "Fire params")
-    int32 NumShotsInSeries = 3;
+    int32 NumShotsInSeries = 2;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "NumShotsInSeries > 1", EditConditionHides), Category = "Fire params")
     float SeriesLength = 1.f;
@@ -45,6 +51,12 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (EditCondition = "Type == ECannonType::FireProjectile", EditConditionHides), Category = "Fire params")
     TSubclassOf<class AProjectile> ProjectileClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+    class UForceFeedbackEffect* ShootForceEffect;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Effects")
+    TSubclassOf<class UCameraShakeBase> ShootShake;
 
 private:
     FTimerHandle ReloadTimerHandle;

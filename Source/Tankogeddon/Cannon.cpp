@@ -10,6 +10,10 @@
 #include "DrawDebugHelpers.h"
 #include "ActorPoolSubsystem.h"
 #include "Damageable.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+#include "Camera/CameraShakeBase.h"
+#include "GameFramework/ForceFeedbackEffect.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -25,6 +29,12 @@ ACannon::ACannon()
 
     ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
     ProjectileSpawnPoint->SetupAttachment(Mesh);
+
+    ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Shoot Effect"));
+    ShootEffect->SetupAttachment(ProjectileSpawnPoint);
+
+    AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Effect"));
+    AudioEffect->SetupAttachment(ProjectileSpawnPoint);
 }
 
 void ACannon::Fire()
@@ -117,6 +127,24 @@ void ACannon::Reload()
 void ACannon::Shot()
 {
     check(ShotsLeft > 0);
+    ShootEffect->ActivateSystem();
+    AudioEffect->Play();
+
+    if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
+    {
+        if (ShootForceEffect)
+        {
+            FForceFeedbackParameters Params;
+            Params.bLooping = false;
+            Params.Tag = TEXT("ShootFFParams");
+            GetWorld()->GetFirstPlayerController()->ClientPlayForceFeedback(ShootForceEffect);
+        }
+        if (ShootShake)
+        {
+            GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(ShootShake);
+        }
+    }
+
     if (Type == ECannonType::FireProjectile)
     {
         GEngine->AddOnScreenDebugMessage(INDEX_NONE, 1, FColor::Green, TEXT("Fire - projectile"));
@@ -146,14 +174,18 @@ void ACannon::Shot()
             {
                 HitResult.Actor->Destroy();
             }
-			else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
-			{
-                FDamageData DamageData;
-                DamageData.DamageValue = FireDamage;
-                DamageData.Instigator = GetInstigator();
-                DamageData.DamageMaker = this;
-                Damageable->TakeDamage(DamageData);
-			}
+            else if (IDamageable* Damageable = Cast<IDamageable>(HitResult.Actor))
+            {
+                AActor* MyInstigator = GetInstigator();
+                if (HitResult.Actor != MyInstigator)
+                {
+                    FDamageData DamageData;
+                    DamageData.DamageValue = FireDamage;
+                    DamageData.DamageMaker = this;
+                    DamageData.Instigator = MyInstigator;
+                    Damageable->TakeDamage(DamageData);
+                }
+            }
         }
         else
         {

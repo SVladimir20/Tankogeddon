@@ -2,6 +2,7 @@
 
 
 #include "HealthComponent.h"
+#include "TankogeddonGameModeBase.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -11,7 +12,6 @@ UHealthComponent::UHealthComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	// ...
 }
-
 
 void UHealthComponent::TakeDamage(const FDamageData& DamageData)
 {
@@ -24,6 +24,8 @@ void UHealthComponent::TakeDamage(const FDamageData& DamageData)
         {
             OnDie.Broadcast();
         }
+
+        Cast<ATankogeddonGameModeBase>(GetWorld()->GetAuthGameMode())->NotifyActorWasDestroyedByDamage(GetOwner(), DamageData);
     }
     else
     {
@@ -32,6 +34,7 @@ void UHealthComponent::TakeDamage(const FDamageData& DamageData)
             OnHealthChanged.Broadcast(TakedDamageValue);
         }
     }
+
 }
 
 float UHealthComponent::GetHealth() const

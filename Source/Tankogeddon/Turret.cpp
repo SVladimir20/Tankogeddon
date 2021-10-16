@@ -59,7 +59,6 @@ void ATurret::BeginPlay()
     Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
     PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 }
 
 void ATurret::Destroyed()
@@ -140,4 +139,9 @@ void ATurret::Tick(float DeltaTime)
 void ATurret::TakeDamage(const FDamageData& DamageData)
 {
     HealthComponent->TakeDamage(DamageData);
+}
+
+int32 ATurret::GetScores() const
+{
+    return DestructionScores;
 }

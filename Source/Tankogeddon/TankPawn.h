@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameStructs.h"
 #include "Damageable.h"
+#include "Scoreable.h"
 #include "TankPawn.generated.h"
 
 UCLASS()
-class TANKOGEDDON_API ATankPawn : public APawn, public IDamageable
+class TANKOGEDDON_API ATankPawn : public APawn, public IDamageable, public IScoreable
 {
 	GENERATED_BODY()
 
@@ -32,11 +34,11 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UArrowComponent* CannonSpawnPoint;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class UBoxComponent* HitCollider;
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    class UHealthComponent* HealthComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class UHealthComponent* HealthComponent;
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    class UBoxComponent* HitCollider;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
     float MoveSpeed = 100.f;
@@ -56,11 +58,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
     TSubclassOf<class ACannon> DefaultCannonClass;
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Health")
-	void OnHealthChanged(float Damage);
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Scores")
+    int32 DestructionScores = 10;
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Health")
-	void OnDie();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params", Meta = (MakeEditWidget = true))
+    TArray<FVector> PatrollingPoints;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params")
+    float MovementAccuracy = 50.f;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -93,6 +98,31 @@ public:
     UFUNCTION(BlueprintPure, Category = "Turret")
     class ACannon* GetActiveCannon() const;
 
+    UFUNCTION(BlueprintPure, Category = "Turret")
+    FVector GetTurretForwardVector();
+
+    virtual void TakeDamage(const FDamageData& DamageData) override;
+    int32 GetScores() const override;
+
+    UFUNCTION(BlueprintPure, Category = "AI|Move params")
+    const TArray<FVector>& GetPatrollingPoints() 
+    { 
+        return PatrollingPoints;
+    }
+
+    UFUNCTION(BlueprintPure, Category = "AI|Move params")
+    float GetMovementAccuracy() 
+    { 
+        return MovementAccuracy; 
+    }
+
+protected:
+    UFUNCTION(BlueprintNativeEvent, Category = "Health")
+    void OnHealthChanged(float Damage);
+
+    UFUNCTION(BlueprintNativeEvent, Category = "Health")
+    void OnDie();
+
 private:
     UPROPERTY()
     class ACannon* ActiveCannon = nullptr;
@@ -106,7 +136,4 @@ private:
     float TargetRotateRightAxis = 0.f;
 
     FVector TurretTargetPosition;
-
-public:
-    virtual void TakeDamage(const FDamageData& DamageData) override;
 };
