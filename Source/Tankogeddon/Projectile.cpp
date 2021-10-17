@@ -84,5 +84,6 @@ void AProjectile::OnMeshHit(class UPrimitiveComponent* OverlappedComp, class AAc
         DamageData.DamageMaker = this;
         Damageable->TakeDamage(DamageData);
     }
+
     Stop();
 }

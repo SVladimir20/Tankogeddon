@@ -68,6 +68,7 @@ void UActorPoolSubsystem::OnActorDestroyed(AActor* Actor)
     {
         Pool->Remove(Actor);
     }
+
     Actors.Remove(Actor);
 }
 

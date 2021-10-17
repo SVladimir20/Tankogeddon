@@ -34,6 +34,7 @@ void AAmmoBox::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, AAc
         {
             PlayerPawn->SetupCannon(CannonClass);
         }
+
         Destroy();
     }
 }
