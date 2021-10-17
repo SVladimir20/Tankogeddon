@@ -46,9 +46,6 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
     float TurretRotationSmootheness = 0.5f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
-    TSubclassOf<class ACannon> DefaultCannonClass;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -71,9 +68,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Turret")
 	void FireSpecial();
 
-private:
-    void SetupCannon();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	TSubclassOf<class ACannon> FirstCannonClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	TSubclassOf<class ACannon> SecondCannonClass;
+
+	UFUNCTION(BlueprintCallable, Category = "Turret")
+	void SetupCannon(TSubclassOf<class ACannon> InCannonClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Turret")
+	void SwapWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Turret")
+	void Ammunition(int32 MaxAmmo);
+
+private:
     UPROPERTY()
     class ACannon* Cannon = nullptr;
 
