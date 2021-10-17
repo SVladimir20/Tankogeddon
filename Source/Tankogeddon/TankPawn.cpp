@@ -10,6 +10,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/ArrowComponent.h"
 #include "Cannon.h"
+#include "Components/BoxComponent.h"
+#include "HealthComponent.h"
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -35,6 +37,18 @@ ATankPawn::ATankPawn()
 
     CannonSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
     CannonSpawnPoint->SetupAttachment(TurretMesh);
+
+    HitCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Hit collider"));
+    HitCollider->SetupAttachment(BodyMesh);
+
+    HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+    HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
+    HealthComponent->OnHealthChanged.AddDynamic(this, &ATankPawn::OnHealthChanged);
+}
+
+int32 ATankPawn::GetScores() const
+{
+    return DestructionScores;
 }
 
 // Called when the game starts or when spawned
@@ -133,4 +147,24 @@ void ATankPawn::CycleCannon()
 ACannon* ATankPawn::GetActiveCannon() const
 {
     return ActiveCannon;
+}
+
+FVector ATankPawn::GetTurretForwardVector()
+{
+    return TurretMesh->GetForwardVector();
+}
+
+void ATankPawn::TakeDamage(const FDamageData& DamageData)
+{
+    HealthComponent->TakeDamage(DamageData);
+}
+
+void ATankPawn::OnHealthChanged_Implementation(float Damage)
+{
+    UE_LOG(LogTankogeddon, Log, TEXT("Tank %s taken damage:%f "), *GetName(), Damage);
+}
+
+void ATankPawn::OnDie_Implementation()
+{
+    Destroy();
 }
