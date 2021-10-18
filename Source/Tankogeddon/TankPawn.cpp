@@ -12,6 +12,7 @@
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
 #include "HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -75,6 +76,12 @@ void ATankPawn::Tick(float DeltaTime)
 
     UE_LOG(LogTankogeddon, Verbose, TEXT("CurrentRotateRightAxis: %f"), CurrentRotateRightAxis);
 
+    if (!bIsTurretTargetSet)
+    {
+        TurretTargetDirection = TurretTargetDirection.RotateAngleAxis(TurretRotationSmootheness * DeltaTime * TurretRotationAxis, FVector::UpVector);
+        TurretTargetPosition = GetActorLocation() + TurretTargetDirection;
+    }
+
     FRotator TargetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TurretTargetPosition);
     FRotator CurrentRotation = TurretMesh->GetComponentRotation();
     TargetRotation.Roll = CurrentRotation.Roll;
@@ -95,6 +102,14 @@ void ATankPawn::RotateRight(float InAxisValue)
 void ATankPawn::SetTurretTargetPosition(const FVector& TargetPosition)
 {
     TurretTargetPosition = TargetPosition;
+    bIsTurretTargetSet = true;
+}
+
+void ATankPawn::SetTurretRotationAxis(float AxisValue)
+{
+    TurretRotationAxis = AxisValue;
+    TurretTargetDirection = TurretTargetPosition - GetActorLocation();
+    bIsTurretTargetSet = false;
 }
 
 void ATankPawn::Fire()
@@ -166,5 +181,8 @@ void ATankPawn::OnHealthChanged_Implementation(float Damage)
 
 void ATankPawn::OnDie_Implementation()
 {
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestuctionParticleSystem, GetActorTransform());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
+
     Destroy();
 }

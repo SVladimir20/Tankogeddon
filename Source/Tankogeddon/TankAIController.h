@@ -24,7 +24,7 @@ protected:
     TArray<FVector> PatrollingPoints;
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
-    float TargetingRange = 10000.f;
+    float TargetingRange = 1000.f;
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Targeting")
     float Accuracy = 10.f;

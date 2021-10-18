@@ -37,6 +37,12 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UHealthComponent* HealthComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	class UParticleSystem* DestuctionParticleSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class USoundBase* DestructionSound; 
+
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UBoxComponent* HitCollider;
 
@@ -82,6 +88,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Turret")
     void SetTurretTargetPosition(const FVector& TargetPosition);
+
+    UFUNCTION(BlueprintCallable, Category = "Turret")
+    void SetTurretRotationAxis(float AxisValue);
     
     UFUNCTION(BlueprintCallable, Category = "Turret")
     void Fire();
@@ -136,4 +145,7 @@ private:
     float TargetRotateRightAxis = 0.f;
 
     FVector TurretTargetPosition;
+    FVector TurretTargetDirection;
+    bool bIsTurretTargetSet = false;
+    float TurretRotationAxis = 0.f;
 };
