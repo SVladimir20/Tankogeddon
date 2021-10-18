@@ -37,11 +37,11 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UHealthComponent* HealthComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
-	class UParticleSystem* DestuctionParticleSystem;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UParticleSystem* DyingVisibleEffect;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
-	class USoundBase* DestructionSound; 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class USoundBase* DyingAudioEffect;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     class UBoxComponent* HitCollider;
