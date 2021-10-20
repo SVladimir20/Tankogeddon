@@ -23,22 +23,22 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UStaticMeshComponent* GatesMesh;
+	class UStaticMeshComponent* GatesMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UBoxComponent* TriggerCollider;
+	class UBoxComponent* TriggerCollider;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UPointLightComponent* ActivatedLight;
+	class UPointLightComponent* ActivatedLight;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UPointLightComponent* DeactivatedLight;
+	class UPointLightComponent* DeactivatedLight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level loading params")
-		FName LoadLevelName;
+	FName LoadLevelName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level loading params")
-		bool bIsActivated = false;
+	bool bIsActivated = false;
 
 private:
 	void SetActiveLights();

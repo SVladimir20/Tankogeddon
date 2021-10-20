@@ -18,28 +18,28 @@ public:
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UStaticMeshComponent* BuildingMesh;
+	class UStaticMeshComponent* BuildingMesh;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UArrowComponent* TankSpawnPoint;
+	class UArrowComponent* TankSpawnPoint;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UBoxComponent* HitCollider;
+	class UBoxComponent* HitCollider;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UHealthComponent* HealthComponent;
+	class UHealthComponent* HealthComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
-		TSubclassOf<class ATankPawn> SpawnTankClass;
+	TSubclassOf<class ATankPawn> SpawnTankClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Spawn tanks params")
-		float SpawnTankRate = 30.f;
+	float SpawnTankRate = 30.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn tanks params")
-		TArray<class ATargetPoint*> TankWayPoints;
+	TArray<class ATargetPoint*> TankWayPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Portal Params")
-		class AMapLoader* MapLoader;
+	class AMapLoader* MapLoader;
 
 public:
 	virtual void TakeDamage(const FDamageData& DamageData) override;
@@ -52,10 +52,10 @@ protected:
 	void SpawnNewTank();
 
 	UFUNCTION()
-		void Die();
+	void Die();
 
 	UFUNCTION()
-		void DamageTaked(float DamageValue);
+	void DamageTaked(float DamageValue);
 
 private:
 	FTimerHandle SpawnTankTimerHandle;
