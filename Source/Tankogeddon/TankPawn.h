@@ -68,7 +68,7 @@ protected:
     int32 DestructionScores = 10;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params", Meta = (MakeEditWidget = true))
-    TArray<FVector> PatrollingPoints;
+    TArray<class ATargetPoint*> PatrollingPoints;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params")
     float MovementAccuracy = 50.f;
@@ -113,11 +113,17 @@ public:
     virtual void TakeDamage(const FDamageData& DamageData) override;
     int32 GetScores() const override;
 
-    UFUNCTION(BlueprintPure, Category = "AI|Move params")
-    const TArray<FVector>& GetPatrollingPoints() 
-    { 
-        return PatrollingPoints;
-    }
+	UFUNCTION(BlueprintCallable, Category = "AI|Move params")   
+	void SetPatrollingPoints(const TArray<class ATargetPoint*>& InPoints)
+	{
+		PatrollingPoints = InPoints;
+	}
+
+	UFUNCTION(BlueprintPure, Category = "AI|Move params")
+	const TArray<class ATargetPoint*>& GetPatrollingPoints() const
+	{
+		return PatrollingPoints;
+	}
 
     UFUNCTION(BlueprintPure, Category = "AI|Move params")
     float GetMovementAccuracy() 
