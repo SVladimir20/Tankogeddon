@@ -51,9 +51,8 @@ ATurret::ATurret()
     HealthComponent->OnDie.AddDynamic(this, &ATurret::OnDie);
     HealthComponent->OnHealthChanged.AddDynamic(this, &ATurret::OnHealthChanged);
 
-	DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("ShootVisibleEffect"));
-
-	DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("ShootAudioEffect"));
+	DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Dying VisibleEffect"));
+	DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Dying AudioEffect"));
 }
 
 // Called when the game starts or when spawned
