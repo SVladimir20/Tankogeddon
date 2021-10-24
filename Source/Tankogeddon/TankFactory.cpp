@@ -48,7 +48,10 @@ ATankFactory::ATankFactory()
 
 void ATankFactory::TakeDamage(const FDamageData& DamageData)
 {
-	HealthComponent->TakeDamage(DamageData);
+	if (bIsFactoryAlive)
+	{
+		HealthComponent->TakeDamage(DamageData);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -56,8 +59,8 @@ void ATankFactory::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BuildingMesh->SetVisibility(true);
-	DestroyedMesh->SetVisibility(false);
+	bIsFactoryAlive = true;
+	DestroyedMesh->SetHiddenInGame(true);
 
 	GetWorld()->GetTimerManager().SetTimer(SpawnTankTimerHandle, this, &ATankFactory::SpawnNewTank, SpawnTankRate, true, SpawnTankRate);
 }
@@ -71,15 +74,18 @@ void ATankFactory::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATankFactory::SpawnNewTank()
 {
-	FTransform SpawnTransform(TankSpawnPoint->GetComponentRotation(), TankSpawnPoint->GetComponentLocation(), FVector(1.f));
-	ATankPawn* NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	
-	NewTank->SetPatrollingPoints(TankWayPoints);
+	if (bIsFactoryAlive)
+	{
+		FTransform SpawnTransform(TankSpawnPoint->GetComponentRotation(), TankSpawnPoint->GetComponentLocation(), FVector(1.f));
+		ATankPawn* NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnVisibleEffect, GetActorLocation(), GetActorRotation());
-	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), SpawnAudioEffect, GetActorLocation(), GetActorRotation());
+		NewTank->SetPatrollingPoints(TankWayPoints);
 
-	NewTank->FinishSpawning(SpawnTransform);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnVisibleEffect, GetActorLocation(), GetActorRotation());
+		UGameplayStatics::SpawnSoundAtLocation(GetWorld(), SpawnAudioEffect, GetActorLocation(), GetActorRotation());
+
+		NewTank->FinishSpawning(SpawnTransform);
+	}
 }
 
 void ATankFactory::Die()
@@ -92,8 +98,9 @@ void ATankFactory::Die()
 		MapLoader->SetIsActivated(true);
 	}
 
-	BuildingMesh->SetVisibility(false);
-	DestroyedMesh->SetVisibility(true);
+	bIsFactoryAlive = false;
+	BuildingMesh->SetHiddenInGame(true);
+	DestroyedMesh->SetHiddenInGame(false);
 }
 
 void ATankFactory::DamageTaked(float DamageValue)

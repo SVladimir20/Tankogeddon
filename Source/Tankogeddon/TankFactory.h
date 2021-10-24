@@ -74,4 +74,6 @@ protected:
 
 private:
 	FTimerHandle SpawnTankTimerHandle;
+
+	bool bIsFactoryAlive = false;
 };
