@@ -21,15 +21,7 @@ public:
 	virtual void Stop() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-	float ExplosionRange = 1000.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-	float ExplosionImpulse = 100.f;
-
 protected:
-	virtual void OnMeshHit(class UPrimitiveComponent* HittedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult) override;
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		class UPhysicsMovementComponent* MovementComponent;
+	class UPhysicsMovementComponent* MovementComponent;
 };
