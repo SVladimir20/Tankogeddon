@@ -31,5 +31,5 @@ protected:
 	virtual void OnMeshHit(class UPrimitiveComponent* HittedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult) override;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	class UPhysicsMovementComponent* MovementComponent;
+		class UPhysicsMovementComponent* MovementComponent;
 };

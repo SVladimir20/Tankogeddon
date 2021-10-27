@@ -67,9 +67,7 @@ void APhysicsProjectile::OnMeshHit(class UPrimitiveComponent* HittedComp, class 
 		{
 			AActor* HitActor = HitResult.GetActor();
 			if (!HitActor)
-			{
 				continue;
-			}
 
 			IDamageable* DamageableActor = Cast<IDamageable>(HitActor);
 			if (DamageableActor)
@@ -94,5 +92,6 @@ void APhysicsProjectile::OnMeshHit(class UPrimitiveComponent* HittedComp, class 
 			}
 		}
 	}
+
 	Stop();
 }
