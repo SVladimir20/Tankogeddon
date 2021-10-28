@@ -11,6 +11,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "MapLoader.h"
 #include "Serialization/Archive.h"
+#include <Particles/ParticleSystem.h>
+#include <Sound/SoundBase.h>
 
 // Sets default values
 ATankFactory::ATankFactory()
@@ -33,6 +35,12 @@ ATankFactory::ATankFactory()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 	HealthComponent->OnDie.AddDynamic(this, &ATankFactory::Die);
 	HealthComponent->OnHealthChanged.AddDynamic(this, &ATankFactory::DamageTaked);
+
+	DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Dying Visible Effect"));
+	DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Dying Audio Effect"));
+
+	SpawnVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Spawn Visible Effect"));
+	SpawnAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Spawn Audio Effect"));
 }
 
 void ATankFactory::TakeDamage(const FDamageData& DamageData)
@@ -61,11 +69,18 @@ void ATankFactory::SpawnNewTank()
 	ATankPawn* NewTank = GetWorld()->SpawnActorDeferred<ATankPawn>(SpawnTankClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
 	NewTank->SetPatrollingPoints(TankWayPoints);
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnVisibleEffect, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), SpawnAudioEffect, GetActorLocation(), GetActorRotation());
+
 	NewTank->FinishSpawning(SpawnTransform);
 }
 
 void ATankFactory::Die()
 {
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DyingVisibleEffect, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DyingAudioEffect, GetActorLocation(), GetActorRotation());
+
 	if (MapLoader)
 	{
 		MapLoader->SetIsActivated(true);
