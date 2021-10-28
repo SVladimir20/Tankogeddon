@@ -19,7 +19,7 @@ AProjectile::AProjectile()
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->SetupAttachment(RootComponent);
     Mesh->OnComponentHit.AddDynamic(this, &AProjectile::OnMeshHit);
-    Mesh->SetHiddenInGame(true);
+    Mesh->SetVisibility(true);
     RootComponent = Mesh;
 }
 
@@ -27,14 +27,14 @@ void AProjectile::Start()
 {
     PrimaryActorTick.SetTickFunctionEnable(true);
     StartPosition = GetActorLocation();
-    Mesh->SetHiddenInGame(false);
+    Mesh->SetVisibility(false);
     Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void AProjectile::Stop()
 {
     PrimaryActorTick.SetTickFunctionEnable(false);
-    Mesh->SetHiddenInGame(true);
+    Mesh->SetVisibility(true);
     Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     UActorPoolSubsystem* Pool = GetWorld()->GetSubsystem<UActorPoolSubsystem>();
@@ -71,6 +71,12 @@ void AProjectile::OnMeshHit(class UPrimitiveComponent* OverlappedComp, class AAc
         Destroy();
         return;
     }
+
+	if (OtherComp->IsSimulatingPhysics())
+	{
+		FVector Impulse = Mass * MoveSpeed * GetActorForwardVector();
+		OtherComp->AddImpulseAtLocation(Impulse, HitResult.ImpactPoint);
+	}
 
     if (OtherActor && OtherComp && OtherComp->GetCollisionObjectType() == ECC_Destructible)
     {

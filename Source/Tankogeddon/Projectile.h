@@ -16,7 +16,7 @@ protected:
     class UStaticMeshComponent* Mesh;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
-    float MoveSpeed = 100.f;
+    float MoveSpeed = 4000.f;
     
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
     float FireRange = 10000.f;
@@ -24,16 +24,20 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float Damage = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Physics")
+	float Mass = 100.f;
+
 public:
     AProjectile();
 
-    void Start();
-    void Stop();
+	virtual void Start();
+	virtual void Stop();
     virtual void Tick(float DeltaSeconds) override;
 
 protected:
     UFUNCTION()
-    void OnMeshHit(class UPrimitiveComponent* HittedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult);
+    virtual void OnMeshHit(class UPrimitiveComponent* HittedComp, class AActor* OtherActor,
+        class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult);
 
 private:
     FVector StartPosition;
