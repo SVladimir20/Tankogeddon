@@ -49,9 +49,8 @@ ATankPawn::ATankPawn()
     HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
     HealthComponent->OnHealthChanged.AddDynamic(this, &ATankPawn::OnHealthChanged);
 
-    DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("ShootVisibleEffect"));
-
-    DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("ShootAudioEffect"));
+    DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Dying Visible Effect"));
+    DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Dying Audio Effect"));
 }
 
 int32 ATankPawn::GetScores() const
