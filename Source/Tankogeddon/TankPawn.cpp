@@ -12,7 +12,10 @@
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
 #include "HealthComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include <Components/AudioComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include <Particles/ParticleSystem.h>
+#include <Sound/SoundBase.h>
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -45,6 +48,10 @@ ATankPawn::ATankPawn()
     HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
     HealthComponent->OnDie.AddDynamic(this, &ATankPawn::OnDie);
     HealthComponent->OnHealthChanged.AddDynamic(this, &ATankPawn::OnHealthChanged);
+
+    DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("ShootVisibleEffect"));
+
+    DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("ShootAudioEffect"));
 }
 
 int32 ATankPawn::GetScores() const
@@ -181,8 +188,11 @@ void ATankPawn::OnHealthChanged_Implementation(float Damage)
 
 void ATankPawn::OnDie_Implementation()
 {
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestuctionParticleSystem, GetActorTransform());
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
-
-    Destroy();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DyingVisibleEffect, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DyingAudioEffect, GetActorLocation(), GetActorRotation());
+	if (ActiveCannon)
+	{
+        ActiveCannon->Destroy();
+	}
+	Destroy();
 }

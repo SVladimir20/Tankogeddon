@@ -12,7 +12,9 @@
 #include "Tankogeddon.h"
 #include "HealthComponent.h"
 #include "DrawDebugHelpers.h"
-#include "Kismet/GameplayStatics.h"
+#include <Kismet/GameplayStatics.h>
+#include <Particles/ParticleSystem.h>
+#include <Sound/SoundBase.h>
 
 // Sets default values
 ATurret::ATurret()
@@ -46,8 +48,12 @@ ATurret::ATurret()
     }
 
     HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
-    HealthComponent->OnHealthChanged.AddDynamic(this, &ATurret::OnHealthChanged);
     HealthComponent->OnDie.AddDynamic(this, &ATurret::OnDie);
+    HealthComponent->OnHealthChanged.AddDynamic(this, &ATurret::OnHealthChanged);
+
+	DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("ShootVisibleEffect"));
+
+	DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("ShootAudioEffect"));
 }
 
 // Called when the game starts or when spawned
@@ -149,8 +155,8 @@ void ATurret::OnHealthChanged_Implementation(float Damage)
 
 void ATurret::OnDie_Implementation()
 {
-    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DestuctionParticleSystem, GetActorTransform());
-    UGameplayStatics::PlaySoundAtLocation(GetWorld(), DestructionSound, GetActorLocation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DyingVisibleEffect, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DyingAudioEffect, GetActorLocation(), GetActorRotation());
 
     Destroy();
 }
