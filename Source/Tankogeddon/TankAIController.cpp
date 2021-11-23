@@ -55,9 +55,13 @@ void ATankAIController::MoveToNextPoint()
 
     float RotationValue = 0.f;
     if (ForwardAngle > 5.f)
+    {
         RotationValue = 1;
+    }
     if (RightAngle > 90.f)
+    {
         RotationValue = -RotationValue;
+    }
 
     TankPawn->RotateRight(RotationValue);
 }
