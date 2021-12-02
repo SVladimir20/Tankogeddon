@@ -16,6 +16,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystem.h>
 #include <Sound/SoundBase.h>
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -51,6 +52,10 @@ ATankPawn::ATankPawn()
 
     DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Dying Visible Effect"));
     DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Dying Audio Effect"));
+
+	UWidgetComponent* WidgetComp = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
+    WidgetComp->SetWidgetClass(HealthWidget);
+    WidgetComp->GetWidget();
 }
 
 int32 ATankPawn::GetScores() const

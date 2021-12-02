@@ -73,6 +73,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params")
     float MovementAccuracy = 50.f;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Widget")
+    TSubclassOf<UUserWidget> HealthWidget;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
