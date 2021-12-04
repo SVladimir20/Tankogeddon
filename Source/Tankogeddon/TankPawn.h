@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameStructs.h"
 #include "Damageable.h"
+#include "HealthComponent.h"
 #include "Scoreable.h"
 #include "TankPawn.generated.h"
 
@@ -73,6 +74,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params")
     float MovementAccuracy = 50.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
+	class UWidgetComponent* HealthWidgetComponent;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -129,6 +133,12 @@ public:
     float GetMovementAccuracy() 
     { 
         return MovementAccuracy; 
+    }
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+    float GetHealthValue() const
+    {
+        return HealthComponent->GetHealthState();
     }
 
 protected:

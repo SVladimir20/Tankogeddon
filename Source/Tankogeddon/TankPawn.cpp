@@ -12,10 +12,12 @@
 #include "Cannon.h"
 #include "Components/BoxComponent.h"
 #include "HealthComponent.h"
+#include "HealthWidget.h"
 #include <Components/AudioComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Particles/ParticleSystem.h>
 #include <Sound/SoundBase.h>
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 ATankPawn::ATankPawn()
@@ -51,6 +53,9 @@ ATankPawn::ATankPawn()
 
     DyingVisibleEffect = CreateDefaultSubobject<UParticleSystem>(TEXT("Dying Visible Effect"));
     DyingAudioEffect = CreateDefaultSubobject<USoundBase>(TEXT("Dying Audio Effect"));
+
+	HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Health Bar"));
+    HealthWidgetComponent->SetupAttachment(RootComponent);
 }
 
 int32 ATankPawn::GetScores() const
@@ -93,6 +98,12 @@ void ATankPawn::Tick(float DeltaTime)
     TargetRotation.Roll = CurrentRotation.Roll;
     TargetRotation.Pitch = CurrentRotation.Pitch;
     TurretMesh->SetWorldRotation(FMath::RInterpConstantTo(CurrentRotation, TargetRotation, DeltaTime, TurretRotationSmootheness));
+
+	if (UHealthWidget* HealthWidget = Cast<UHealthWidget>(HealthWidgetComponent->GetUserWidgetObject()))
+	{
+		HealthWidget->SetHealthValue(GetHealthValue());
+		UE_LOG(LogTemp, Warning, TEXT("Check Health"));
+	}
 }
 
 void ATankPawn::MoveForward(float InAxisValue)
